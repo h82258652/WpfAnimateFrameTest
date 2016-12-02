@@ -19,12 +19,6 @@ namespace WpfAnimateFrameTest
 
         private readonly Grid _pageHost = new Grid();
 
-        private List<PageStackEntry> TestBackStack
-        {
-            // TODO
-            get;
-        } = new List<PageStackEntry>();
-
         static Frame()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Frame), new FrameworkPropertyMetadata(typeof(Frame)));
@@ -54,13 +48,29 @@ namespace WpfAnimateFrameTest
             }
         }
 
+        private List<PageStackEntry> TestBackStack
+        {
+            // TODO remove it
+            get;
+        } = new List<PageStackEntry>();
+
         public void GoBack()
         {
+            // TODO Check if can go back.
+
+            // TODO get source page type and parameter form stack.
+            NavigateInternal(null, null, NavigationMode.Back);
+
             throw new NotImplementedException();
         }
 
         public void GoForward()
         {
+            // TODO Check if can go forward.
+
+            // TODO get source page type and parameter from stack.
+            NavigateInternal(null, null, NavigationMode.Forward);
+
             throw new NotImplementedException();
         }
 
@@ -116,7 +126,7 @@ namespace WpfAnimateFrameTest
             var currentPage = GetCurrentPage();
             if (currentPage != null)
             {
-                currentPage.OnNavigatedFrom(new NavigationEventArgs());
+                currentPage.OnNavigatedFrom(new NavigationEventArgs(sourcePageType, navigationMode, parameter));
                 Action asyncAction = async () =>
                 {
                     await currentPage.PlayLeaveAnimationAsync();
@@ -126,7 +136,7 @@ namespace WpfAnimateFrameTest
                 asyncAction.Invoke();
             }
             _pageHost.Children.Insert(0, newPage);
-            newPage.OnNavigatedTo(new NavigationEventArgs());
+            newPage.OnNavigatedTo(new NavigationEventArgs(sourcePageType, navigationMode, parameter));
         }
     }
 }
