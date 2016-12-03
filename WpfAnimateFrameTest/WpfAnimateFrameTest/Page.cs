@@ -8,6 +8,8 @@ namespace WpfAnimateFrameTest
     {
         public static readonly DependencyProperty FrameProperty = DependencyProperty.Register(nameof(Frame), typeof(Frame), typeof(Page), new PropertyMetadata(default(Frame)));
 
+        internal object _parameter;
+
         public Page()
         {
             Loaded += Page_Loaded;

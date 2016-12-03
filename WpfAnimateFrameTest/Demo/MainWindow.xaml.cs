@@ -12,6 +12,8 @@ namespace Demo
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(TestPage1));
+
+            System.Windows.Controls.Frame
         }
     }
 }

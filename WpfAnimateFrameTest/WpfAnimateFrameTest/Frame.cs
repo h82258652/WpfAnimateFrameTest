@@ -32,7 +32,7 @@ namespace WpfAnimateFrameTest
             }
         }
 
-        public bool CanGoBack
+        public IList<PageStackEntry> ForwardStack
         {
             get
             {
@@ -40,11 +40,27 @@ namespace WpfAnimateFrameTest
             }
         }
 
+        public bool CanGoBack
+        {
+            get
+            {
+                return (bool)GetValue(CanGoBackProperty);
+            }
+            private set
+            {
+                SetValue(CanGoBackProperty, value);
+            }
+        }
+
         public bool CanGoForward
         {
             get
             {
-                throw new NotImplementedException();
+                return (bool)GetValue(CanGoForwardProperty);
+            }
+            private set
+            {
+                SetValue(CanGoForwardProperty, value);
             }
         }
 
@@ -54,24 +70,40 @@ namespace WpfAnimateFrameTest
             get;
         } = new List<PageStackEntry>();
 
+        private int _index;
+
         public void GoBack()
         {
-            // TODO Check if can go back.
+            if (CanGoBack == false)
+            {
+                // TODO 确认异常类型。
+                throw new NotImplementedException();
+            }
 
-            // TODO get source page type and parameter form stack.
-            NavigateInternal(null, null, NavigationMode.Back);
+            var pageStackEntry = TestBackStack[_index];
+            var sourcePageType = pageStackEntry.SourcePageType;
+            var parameter = pageStackEntry.Parameter;
 
-            throw new NotImplementedException();
+            NavigateInternal(sourcePageType, parameter, NavigationMode.Back);
+
+            _index--;
         }
 
         public void GoForward()
         {
-            // TODO Check if can go forward.
+            if (CanGoForward == false)
+            {
+                // TODO 确认异常类型。
+                throw new NotImplementedException();
+            }
 
-            // TODO get source page type and parameter from stack.
-            NavigateInternal(null, null, NavigationMode.Forward);
+            var pageStackEntry = TestBackStack[_index];
+            var sourcePageType = pageStackEntry.SourcePageType;
+            var parameter = pageStackEntry.Parameter;
 
-            throw new NotImplementedException();
+            NavigateInternal(sourcePageType, parameter, NavigationMode.Forward);
+
+            _index++;
         }
 
         public bool Navigate(Type sourcePageType, object parameter)
@@ -82,8 +114,9 @@ namespace WpfAnimateFrameTest
 
             if (currentPage != null)
             {
-                // TODO parameter is current page parameter.
-                TestBackStack.Add(new PageStackEntry(currentPage.GetType(), null));
+                TestBackStack.Insert(_index, new PageStackEntry(currentPage.GetType(), currentPage._parameter));
+                TestBackStack.RemoveRange(_index, 999);
+                TestBackStack.Add(new PageStackEntry(currentPage.GetType(), currentPage._parameter));
             }
 
             return true;
@@ -123,6 +156,7 @@ namespace WpfAnimateFrameTest
 
             var newPage = (Page)Activator.CreateInstance(sourcePageType);
             newPage.Frame = this;
+            newPage._parameter = parameter;
             var currentPage = GetCurrentPage();
             if (currentPage != null)
             {
